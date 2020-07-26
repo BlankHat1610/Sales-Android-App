@@ -1,15 +1,5 @@
 package dev.mxt.banhang.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import dev.mxt.banhang.R;
-import dev.mxt.banhang.api.RetrofitClient;
-import dev.mxt.banhang.model.User;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,8 +8,14 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.io.IOException;
-import java.util.List;
+import androidx.appcompat.app.AppCompatActivity;
+
+import dev.mxt.banhang.R;
+import dev.mxt.banhang.api.RetrofitClient;
+import dev.mxt.banhang.model.User;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -105,25 +101,25 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         }
 
         /*Do the registration using the api call*/
-        Call<List<User>> call = RetrofitClient
+        Call<User> call = RetrofitClient
                 .getInstance()
                 .getApi()
-                .createUser("application/json", name, email, phone, address, password);
-        call.enqueue(new Callback<List<User>>() {
+                .createUser(name, email, phone, address, password);
+        call.enqueue(new Callback<User>() {
             @Override
-            public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-                if (response.isSuccessful()) {
-                    String s = response.body().toString();
-                    Log.d(TAG, "onResponse: " + s);
-                    Toast.makeText(RegisterActivity.this, s, Toast.LENGTH_LONG).show();
-                } else {
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (!response.isSuccessful()) {
                     Toast.makeText(RegisterActivity.this, "Response Failed", Toast.LENGTH_LONG).show();
-                    Log.d(TAG, "onResponse: response is Failed");
+                    Log.d(TAG, "onResponse: response is Failed " + response.code());
+                    return;
                 }
+                Toast.makeText(RegisterActivity.this, "Dang Ky Thanh Cong", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                startActivity(intent);
             }
 
             @Override
-            public void onFailure(Call<List<User>> call, Throwable t) {
+            public void onFailure(Call<User> call, Throwable t) {
                 Toast.makeText(RegisterActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });

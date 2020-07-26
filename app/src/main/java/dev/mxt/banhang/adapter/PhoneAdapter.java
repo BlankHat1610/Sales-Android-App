@@ -13,10 +13,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+
 import dev.mxt.banhang.R;
 import dev.mxt.banhang.model.Smartphone;
 
-public class PhoneAdapter extends RecyclerView.Adapter<PhoneAdapter.HorizontalViewHolder> {
+public class PhoneAdapter extends RecyclerView.Adapter<PhoneAdapter.ViewHolder> {
 
     private Context context;
     private ArrayList<Smartphone> smartphones;
@@ -32,18 +33,18 @@ public class PhoneAdapter extends RecyclerView.Adapter<PhoneAdapter.HorizontalVi
 
     @NonNull
     @Override
-    public PhoneAdapter.HorizontalViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public PhoneAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         View itemView = layoutInflater.inflate(layout, parent, false);
-        return new HorizontalViewHolder(itemView, mOnPhoneListener);
+        return new ViewHolder(itemView, mOnPhoneListener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull HorizontalViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Picasso.get().load(smartphones.get(position).getProAvatar()).into(holder.img);
         holder.brandName.setText(smartphones.get(position).getCName());
         holder.name.setText(smartphones.get(position).getProName());
-        holder.price.setText(Integer.toString(smartphones.get(position).getProPrice()));
+        holder.price.setText(Integer.toString(smartphones.get(position).getProPrice()) + " Đ");
     }
 
     @Override
@@ -51,7 +52,7 @@ public class PhoneAdapter extends RecyclerView.Adapter<PhoneAdapter.HorizontalVi
         return smartphones.size();
     }
 
-    public class HorizontalViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private ImageView img;
         private TextView name;
@@ -60,7 +61,7 @@ public class PhoneAdapter extends RecyclerView.Adapter<PhoneAdapter.HorizontalVi
 
         private OnPhoneListener onPhoneListener;
 
-        public HorizontalViewHolder(@NonNull View itemView, OnPhoneListener onPhoneListener) {
+        public ViewHolder(@NonNull View itemView, OnPhoneListener onPhoneListener) {
             super(itemView);
             img = (ImageView) itemView.findViewById(R.id.img);
             name = (TextView) itemView.findViewById(R.id.name);
@@ -73,11 +74,11 @@ public class PhoneAdapter extends RecyclerView.Adapter<PhoneAdapter.HorizontalVi
 
         @Override
         public void onClick(View v) {
-            onPhoneListener.onPhoneClick(getAdapterPosition());
+            onPhoneListener.onPhoneClick(getAdapterPosition(), smartphones);
         }
     }
 
     public interface OnPhoneListener{
-        void onPhoneClick(int position);
+        void onPhoneClick(int position, ArrayList<Smartphone> smartphoneArrayList);
     }
 }

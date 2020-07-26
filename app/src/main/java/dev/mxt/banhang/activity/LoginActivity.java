@@ -1,24 +1,27 @@
 package dev.mxt.banhang.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Patterns;
+import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.Toast;
 
-import dev.mxt.banhang.R;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.regex.Pattern;
+import dev.mxt.banhang.R;
+import dev.mxt.banhang.api.RetrofitClient;
+import dev.mxt.banhang.model.User;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
 
     private EditText etPhone, etPassword;
-    private Button btnLogin;
-    private TextView tvRegister;
+    private static final String TAG = "LoginActivity";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,5 +71,43 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             etPassword.requestFocus();
             return;
         }
+
+        Call<User> call = RetrofitClient
+                .getInstance()
+                .getApi()
+                .login(phone, password);
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (!response.isSuccessful()) {
+                    Toast.makeText(LoginActivity.this, "Response Failed", Toast.LENGTH_LONG).show();
+                    Log.d(TAG, "onResponse: response is Failed " + response.code());
+                    return;
+                }
+                User user = response.body();
+                if (user.getPhone() != null) {
+                    saveData(user.getId(), user.getPhone(), user.getAddress(), user.getName(), user.getEmail());
+                    Toast.makeText(LoginActivity.this, "Dang Nhap Thanh Cong", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void saveData(Integer id, String phone, String address, String name, String email) {
+        MainActivity.sharedPreferences = getSharedPreferences("userData", Context.MODE_PRIVATE);
+        MainActivity.editor = MainActivity.sharedPreferences.edit();
+        MainActivity.editor.putString("phone", phone);
+        MainActivity.editor.putString("name", name);
+        MainActivity.editor.putString("email", email);
+        MainActivity.editor.putString("address", address);
+        MainActivity.editor.putInt("id", id);
+        MainActivity.editor.apply();
     }
 }

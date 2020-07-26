@@ -12,8 +12,12 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="name">Name</string>
-    <string name="sign_up">Sign Up</string>
+    <string name="sign_up">Đăng Ký</string>
     <string name="address">Address</string>
     <string name="phone_number">Phone Number</string>
     <string name="have_an_account_login">Have an account! Login</string>
+    <string name="currency_unit_float">%f Đ</string>
+    <string name="currency_unit_integer">%d Đ</string>
+    <string name="log_out">Đăng Xuất</string>
+    <string name="search_hint">Tìm kiếm</string>
 </resources>
